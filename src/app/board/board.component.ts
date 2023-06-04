@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
 
+enum PathType {
+  'Unvisited' = 1,
+  'Visited',
+  'CurrrentPath',
+  'CurrentHead'
+}
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -14,30 +21,42 @@ export class BoardComponent {
   }[]
 
   constructor() {
-    this.squares = Array(this.numCols * this.numRows).fill({
+    // Exclude the start and end squares (hence -2)
+    this.squares = Array.from({ length: this.numCols * this.numRows - 2}, () => ({
       isWall: false
-    })
+    }));
   }
 
 
   toggleWall(idx: number){
-    this.squares[idx].isWall = this.squares[idx].isWall ? false : true;
+    this.squares[idx].isWall = !this.squares[idx].isWall;
+    console.log(this.squares[idx],     console.log(this.squares[idx - 1]))
     console.log(idx)
   }
 
   clearWalls(){
-    this.squares = Array(this.numCols * this.numRows).fill({
-      isWall: false
-    })
+    let index = 0;
+    for (let square of this.squares) {
+      if (index != 0 && index != this.numCols * this.numRows - 2) {
+        square.isWall = false;
+      }
+
+      index++;
+    }
   }
 
   resetPath() {
 
   }
 
-  runDFS() {
+  DFS() {
 
   }
+
+  runDFS() {
+    
+  }
+
 
   runBFS() {
 
