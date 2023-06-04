@@ -16,6 +16,7 @@ type Vertex = vertex | null;
 export class BoardComponent {
   numCols = 10;
   numRows = 10;
+  haltAlgorithm = true;
 
   squares: {
     isWall: boolean,
@@ -60,6 +61,10 @@ export class BoardComponent {
     console.log(this.squares)
   }
 
+  stopAlgorithm() {
+    this.haltAlgorithm = true;
+  }
+
   DFS() {
     this.resetPath();
     const start: vertex = {row: 0, col: 0}
@@ -77,94 +82,110 @@ export class BoardComponent {
     }
 
     console.log(visited)
-    this.runDFS(visited, start);
+    this.runDFS(visited, start, 50);
   }
 
-  runDFS(visisted: Vertex[][], start: vertex) {
-    const stack: Vertex[] = [start];
+  runDFS(visited: Vertex[][], start: vertex, delay: number) {
+    let stack: Vertex[] = [start];
     let prev: vertex = start;
 
-    // while stack is not empty
-    while(stack.length != 0) {
-      let curr: vertex = stack.pop() as vertex;
-      // if end square
-      if (curr.row === this.numRows - 1 && curr.col === this.numCols - 1) {
-        visisted[curr.row][curr.col] = prev;
-        this.updateSquareVisisted(visisted, curr);
-        break;
+    // Recursive function for DFS with delay
+    const dfsWithDelay = () => {
+      if (stack.length === 0) {
+        if (visited[this.numRows - 1][this.numCols - 1]?.row === -1) {
+          console.log('No path');
+        } else {
+          console.log('Found path');
+        }
+        console.log(visited);
+        return;
       }
 
-      // if already visited
-      if (!((visisted[curr.row][curr.col] as vertex).row === -1)) {
-        continue;
+      let curr: vertex = stack.pop() as vertex;
+
+      // If end square
+      if (curr.row === this.numRows - 1 && curr.col === this.numCols - 1) {
+        visited[curr.row][curr.col] = prev;
+        this.updateSquareVisited(visited, curr);
+        setTimeout(dfsWithDelay, delay);
+        stack = [];
+        return;
       }
-      visisted[curr.row][curr.col] = prev;
+
+      // If already visited
+      if (!((visited[curr.row][curr.col] as vertex).row === -1)) {
+        setTimeout(dfsWithDelay, delay);
+        return;
+      }
+
+      visited[curr.row][curr.col] = prev;
 
       // [x, y] offsets
       const offsets = [
-        [-1, 0],  // left
-        [0, -1],  // up
-        [0, 1],   // right
-        [1, 0],   // down
-      ]
-      console.log("HERE------")
+        [-1, 0], // left
+        [0, -1], // up
+        [0, 1], // right
+        [1, 0], // down
+      ];
+
       for (const offset of offsets) {
-        let nextSquare = {row: curr.row + offset[0], col: curr.col + offset[1]} as vertex;
-        if (this.validSquare(visisted, nextSquare)) {
-          console.log(nextSquare)
+        let nextSquare = {
+          row: curr.row + offset[0],
+          col: curr.col + offset[1],
+        } as vertex;
+        if (this.validSquare(visited, nextSquare)) {
           stack.push(nextSquare);
         }
       }
 
-      this.updateSquareVisisted(visisted, curr);
-      prev = curr;
-    }
+      this.updateSquareVisited(visited, curr);
+      setTimeout(dfsWithDelay, delay);
+    };
 
-    if (visisted[this.numRows-1][this.numCols-1]?.row === -1) {
-      console.log("No path")
-    }
-    else {
-      console.log("Found path")
-    }
-
-    console.log(visisted)
+    // Start the DFS with delay
+    setTimeout(dfsWithDelay, delay);
   }
 
-  validSquare(visisted: Vertex[][], vert: vertex) {
-    // check bounds
-    if (vert.row < 0 || vert.row >= this.numRows
-      || vert.col < 0 || vert.col >= this.numRows) {
+  validSquare(visited: Vertex[][], vert: vertex) {
+    // Check bounds
+    if (
+      vert.row < 0 ||
+      vert.row >= this.numRows ||
+      vert.col < 0 ||
+      vert.col >= this.numRows
+    ) {
       return false;
-
     }
 
-    // check if it is not a wall
+    // Check if it is not a wall
     if (this.squares[this.numRows * vert.row + vert.col].isWall) {
       return false;
     }
 
-    // valid square (both inbounds and not a wall)
+    // Valid square (both inbounds and not a wall)
     return true;
   }
 
-  updateSquareVisisted(visisted: Vertex[][], vert: vertex) {
-    for (const row of visisted) {
-      for (const square of row) {
-        if (square?.row !== -1) {
-          let row = square?.row as number;
-          let col = square?.col as number;
-          this.squares[row * this.numRows + col].path = 'Visited';
-        }
-      }
-    }
+  updateSquareVisited(visited: Vertex[][], vert: vertex) {
+    // Track visisted squares
+
+    let row = vert.row;
+    let col = vert.col;
+    this.squares[row * this.numRows + col].path = 'Visited';
+
+
+
+
+    // Plot current trace
+    // let curr = vert as vertex;
+    // while (curr.row !== 0 && curr.col !== 0) {
+    //   this.squares[curr.row * this.numRows + curr.col].path = 'Path';
+    //   curr = visited[curr.row][curr.col] as vertex;
+    // }
+
   }
 
   runBFS() {
-    console.log("NOT YET IMPLEMENTED")
-  }
-
-  delay(ms: number) {
-    // from https://stackoverflow.com/questions/37764665/how-to-implement-sleep-function-in-typescript
-    return new Promise( resolve => setTimeout(resolve, ms) );
+    console.log('NOT YET IMPLEMENTED');
   }
 }
