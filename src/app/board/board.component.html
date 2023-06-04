@@ -10,7 +10,8 @@
   <!-- 1->n index squares (changeable) -->
   <app-square
     *ngFor="let square of squares; let i = index"
-    [square]="square"
+    [isWall]="square.isWall"
+    [path]="square.path"
     (click)="toggleWall(i)">
   </app-square>
 </main>

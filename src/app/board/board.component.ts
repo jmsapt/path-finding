@@ -7,13 +7,6 @@ interface vertex {
 
 type Vertex = vertex | null;
 
-enum PathType {
-  'Unvisited' = 1,
-  'Visited',
-  'CurrrentPath',
-  'CurrentHead'
-}
-
 
 @Component({
   selector: 'app-board',
@@ -26,12 +19,14 @@ export class BoardComponent {
 
   squares: {
     isWall: boolean,
+    path: string
   }[]
 
   constructor() {
     // Exclude the start and end squares
     this.squares = Array.from({ length: this.numCols * this.numRows}, () => ({
-      isWall: false
+      isWall: false,
+      path: 'Unvisited'
     }));
   }
 
@@ -44,6 +39,7 @@ export class BoardComponent {
   }
 
   clearWalls(){
+    this.resetPath();
     let index = 0;
     for (let square of this.squares) {
       if (index != 0 && index != this.numCols * this.numRows) {
@@ -55,10 +51,17 @@ export class BoardComponent {
   }
 
   resetPath() {
+    let index = 0;
+    for (let square of this.squares) {
+      square.path = 'Unvisited';
+      index++;
+    }
 
+    console.log(this.squares)
   }
 
   DFS() {
+    this.resetPath();
     const start: vertex = {row: 0, col: 0}
     const visited: Vertex[][] = []
 
@@ -68,7 +71,7 @@ export class BoardComponent {
       for (let j: number = 0; j < this.numCols; j++) {
         // Edge cases for starting and end squares
 
-        row.push(!this.squares[i * this.numCols + j].isWall ? {row: -1, col: -1} : null);
+        row.push({row: -1, col: -1});
       }row
       visited.push(row);
     }
@@ -84,6 +87,12 @@ export class BoardComponent {
     // while stack is not empty
     while(stack.length != 0) {
       let curr: vertex = stack.pop() as vertex;
+      // if end square
+      if (curr.row === this.numRows - 1 && curr.col === this.numCols - 1) {
+        visisted[curr.row][curr.col] = prev;
+        this.updateSquareVisisted(visisted, curr);
+        break;
+      }
 
       // if already visited
       if (!((visisted[curr.row][curr.col] as vertex).row === -1)) {
@@ -93,10 +102,10 @@ export class BoardComponent {
 
       // [x, y] offsets
       const offsets = [
+        [-1, 0],  // left
+        [0, -1],  // up
         [0, 1],   // right
         [1, 0],   // down
-        [-1, 0],  // left
-        [0, -1]   // up
       ]
       console.log("HERE------")
       for (const offset of offsets) {
@@ -106,6 +115,8 @@ export class BoardComponent {
           stack.push(nextSquare);
         }
       }
+
+      this.updateSquareVisisted(visisted, curr);
       prev = curr;
     }
 
@@ -115,6 +126,8 @@ export class BoardComponent {
     else {
       console.log("Found path")
     }
+
+    console.log(visisted)
   }
 
   validSquare(visisted: Vertex[][], vert: vertex) {
@@ -126,15 +139,32 @@ export class BoardComponent {
     }
 
     // check if it is not a wall
-    if (visisted[vert.row][vert.col] === null) {
+    if (this.squares[this.numRows * vert.row + vert.col].isWall) {
       return false;
     }
 
-    // valid square
+    // valid square (both inbounds and not a wall)
     return true;
+  }
+
+  updateSquareVisisted(visisted: Vertex[][], vert: vertex) {
+    for (const row of visisted) {
+      for (const square of row) {
+        if (square?.row !== -1) {
+          let row = square?.row as number;
+          let col = square?.col as number;
+          this.squares[row * this.numRows + col].path = 'Visited';
+        }
+      }
+    }
   }
 
   runBFS() {
     console.log("NOT YET IMPLEMENTED")
+  }
+
+  delay(ms: number) {
+    // from https://stackoverflow.com/questions/37764665/how-to-implement-sleep-function-in-typescript
+    return new Promise( resolve => setTimeout(resolve, ms) );
   }
 }

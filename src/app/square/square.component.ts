@@ -6,17 +6,15 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./square.component.scss']
 })
 export class SquareComponent {
-  @Input() square: {
-    isWall: boolean
-  };
-  
+  @Input() isWall: boolean;
+  @Input() path: string;
+
   constructor() {
-    this.square = {
-      isWall: false,
-    };
+    this.isWall = false
+    this.path = 'Unvisited'
   }
 
   toggleWall() {
-    this.square.isWall = this.square.isWall ? false : true;
+    this.isWall = this.isWall ? false : true;
   }
 }

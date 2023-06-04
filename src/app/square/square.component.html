@@ -1,3 +1,7 @@
 <button
-  [ngClass]="{'wall' : square.isWall, 'nonWall': !square.isWall}">
+[ngClass]="{
+  'nonWall': !isWall,
+  'wall': isWall,
+  'visited': path === 'Visited',
+  }">
 </button>
