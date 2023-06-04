@@ -1,1 +1,14 @@
-<p>board works!</p>
+<div>
+  <button (click)="runDFS()">DFS</button>
+  <button (click)="runBFS()">BFS</button>
+  <button (click)="resetPath()">Reset Board State</button>
+  <button (click)="clearWalls()">Clear Walls</button>
+</div>
+
+<main>
+  <app-square
+    *ngFor="let square of squares; let i = index"
+    (click)="toggleWall(i)"
+    [square]="square">
+  </app-square>
+</main>

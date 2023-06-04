@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-square',
@@ -6,11 +6,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./square.component.scss']
 })
 export class SquareComponent {
-  toggle = true;
-  status = "Enable";
-
-  enableDisableRule() {
-    this.toggle = !this.toggle;
-    this.status = this.toggle ? 'Enable' : 'Disable';
+  @Input() square: {
+    isWall: boolean
+  };
+  constructor() {
+    this.square = {
+      isWall: false,
+    };
+  }
+  toggleWall() {
+    this.square.isWall = this.square.isWall ? false : true;
   }
 }
