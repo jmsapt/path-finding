@@ -1,0 +1,6 @@
+<p>square works!</p>
+<button
+    (click)="enableDisableRule()"
+    [ngClass]="{'green' : toggle, 'red': !toggle}">
+    {{status}}
+</button>
