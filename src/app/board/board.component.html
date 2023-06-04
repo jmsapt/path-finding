@@ -1,5 +1,5 @@
 <div>
-  <button (click)="runDFS()">DFS</button>
+  <button (click)="DFS()">DFS</button>
   <button (click)="runBFS()">BFS</button>
   <button (click)="resetPath()">Reset Board State</button>
   <button (click)="clearWalls()">Clear Walls</button>
@@ -7,16 +7,10 @@
 
 <!-- Start and end squares cannot be changed -->
 <main>
-  <!-- Start square is always top left (0th index) -->
-  <app-square></app-square>
-
   <!-- 1->n index squares (changeable) -->
   <app-square
     *ngFor="let square of squares; let i = index"
     [square]="square"
     (click)="toggleWall(i)">
   </app-square>
-
-  <!-- End square is always bottome right (n - 1 index) -->
-  <app-square></app-square>
 </main>
