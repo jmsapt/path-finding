@@ -30,11 +30,12 @@ mod grid;
 use std::{f64};
 use console_error_panic_hook::set_once as set_panic_hook;
 use wasm_bindgen::prelude::*;
-use web_sys::{js_sys::{Function, WebAssembly::validate}, window};
+use web_sys::{js_sys::{Function, WebAssembly::validate}, window, Element, HtmlCanvasElement};
 use console_log;
 
-fn test_function() {
-    console_log!("test");
+
+fn test_function(element: HtmlCanvasElement) {
+    console_log!("Canvas Dimensions: {} {}", element.width(), element.height());
 }
 
 
@@ -45,8 +46,8 @@ fn start_app() {
     body.append_child(text_node.as_ref()).expect("Failed to append text");
     let canvas = document.get_element_by_id("grid-canvas").expect("Canvas not found!");
 
-    let callback: Closure<dyn FnMut()> = Closure::new(|| {
-        test_function();
+    let callback: Closure<dyn FnMut(_)> = Closure::new(|canvas| {
+        test_function(canvas);
     });
 
     document.get_element_by_id("test-button")
@@ -101,6 +102,4 @@ fn start_app() {
 fn main() {
     set_panic_hook();
     start_app();
-
-    console_log!("test");
 }
