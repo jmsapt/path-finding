@@ -10,6 +10,7 @@ console_error_panic_hook = "0.1"
 fixedbitset = "0.4.2"
 wasm-bindgen = "0.2.90"
 console_log = { version = "1.0.0", features = ["color"] }
+anyhow = "1.0.79"
 
 
 
